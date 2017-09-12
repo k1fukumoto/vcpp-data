@@ -44,8 +44,10 @@ def build_size_growth_table(df,opts):
                 country = df_sp.groupby('Country')['Value (USD)'].sum().sort_values(ascending=False).index[0]
                 geo = cfg.COUNTRY2GEO[country]
                 growth = last/prev-1
-#                data = np.vstack([data,[sp,prev,last*(last/prev-1),growth,last-prev,geo,country]])
-                data = np.vstack([data,[sp,prev,last,growth,last-prev,geo,country]])
+                if(opts['bubble_size'] == 'LAST_REV'):
+                    data = np.vstack([data,[sp,prev,last,growth,last-prev,geo,country]])
+                else:
+                    data = np.vstack([data,[sp,prev,last*(last/prev-1),growth,last-prev,geo,country]])
                 if last-prev >300000:
                     print('{:32} {:12} ({}) ${:10,.0f} ({:.0f}%)'.format(sp,country,geo,last-prev,growth*100))
     return data
@@ -95,14 +97,17 @@ def plot(df,opts={}):
 
 plot(df,
      {'type':['GEO','RANK'],
+      'bubble_size': 'NEXT_REV',
       'min_rev_growth':10000})
 
 plot(df[(df['Partner Group Name']=='NTT') &
         (df['Service Provider']!='NTT DATA Inc.')],
     {'type':['NO_SLICE'],
+     'bubble_size': 'NEXT_REV',     
      'min_rev_growth':10000})
     
 plot(df[(df['Country']=='Japan')],
     {'type':['NO_SLICE'],
+     'bubble_size': 'NEXT_REV',     
      'min_rev_growth':10000})
     
