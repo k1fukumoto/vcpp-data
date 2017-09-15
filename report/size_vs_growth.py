@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import config as cfg
 
-def format_chart(opts={}):
+def format_chart(data,opts={}):
     ax = plt.gca()
 #for cols in data[1:,:]:
 #    ax.annotate(cols[0],
@@ -22,7 +22,7 @@ def format_chart(opts={}):
     ax.set_ylabel('YoY QRR Growth')
 # Legend
     if not 'no_legend' in opts.keys():
-        ax.legend(loc="upper right")
+        ax.legend(loc="upper right")       
     
     plt.gcf().set_size_inches(10,6)
     plt.title('Revenue Size vs Growth Distribution')
@@ -44,14 +44,20 @@ def build_size_growth_table(df,opts):
                 country = df_sp.groupby('Country')['Value (USD)'].sum().sort_values(ascending=False).index[0]
                 geo = cfg.COUNTRY2GEO[country]
                 growth = last/prev-1
-                if(opts['bubble_size'] == 'LAST_REV'):
+                if(opts['time_frame'] == 'LAST_12'):
                     data = np.vstack([data,[sp,prev,last,growth,last-prev,geo,country]])
-                else:
-                    data = np.vstack([data,[sp,prev,last*(last/prev-1),growth,last-prev,geo,country]])
-                if last-prev >300000:
-                    print('{:32} {:12} ({}) ${:10,.0f} ({:.0f}%)'.format(sp,country,geo,last-prev,growth*100))
+                elif(opts['time_frame'] == 'NEXT_12'):
+                    data = np.vstack([data,[sp,last,last*(growth+1),growth,last*growth,geo,country]])    
     return data
     
+def annotate_sp_name(ax,data,opts):
+    if ('show_sp_name' in opts.keys()):        
+        for row in data[1:,:][data[1:,4].astype(float) > float(opts['show_sp_name'])]:
+            print('{:32} {:12} ({}) ${:10,.0f} ({:,.0f}%)'.format(row[0],row[6],row[5],float(row[4]),float(row[3])*100))
+            ax.annotate(row[0],
+                        xy=(row[4],row[3]), 
+                        xytext=(row[4],row[3]))      
+        
 def plot(df,opts={}):
     data = build_size_growth_table(df,opts)
     ax = plt.gca()
@@ -59,34 +65,30 @@ def plot(df,opts={}):
     if 'NO_SLICE' in opts['type']:
         plt.scatter(data[1:,4],data[1:,3],s=data[1:,2].astype(np.float)/2000,alpha=0.6)
 
-        format_chart({'no_legend': True})
-        
-        for cols in data[1:,:]:
-            ax.annotate(cols[0],
-                        xy=(cols[4],cols[3]), 
-                        xytext=(cols[4],cols[3]))
+        opts['no_legend'] = True
+        annotate_sp_name(ax,data,opts)
+        format_chart(data,opts)
         plt.show()
 
     if 'RANK' in opts['type']:
         ranges=[[1,20],[21,50],[51,data.shape[0]-1]]
         for r in ranges:
             plt.scatter(data[r[0]:r[1],4],data[r[0]:r[1],3],s=data[r[0]:r[1],2].astype(np.float)/2000,alpha=0.6,label='{} - {}'.format(r[0],r[1]))
-        
-        for row in data[1:,:][data[1:,4].astype(float) > 500000.0]:
-            ax.annotate(row[0],
-                        xy=(row[4],row[3]), 
-                        xytext=(row[4],row[3]))
-        format_chart()
+
+        format_chart(data,opts)
         plt.show()
 
     if 'GEO' in opts['type']:
         geos=['AMER','APAC','EMEA']    
         for geo in geos:
             geo_data = data[data[:,5]==geo]
+            geo_data = geo_data[geo_data[:,4].astype(float) < 10000000.0]
             plt.scatter(geo_data[:,4],geo_data[:,3],s=geo_data[:,2].astype(np.float)/2000,alpha=0.6,label=geo)
+            annotate_sp_name(ax,geo_data,opts)
     
-        format_chart()
+        format_chart(geo_data,opts)
         plt.show()
+    
 
 #    apac_data = data[data[:,5]=='APAC']    
 #    for c in sorted(set(apac_data[:,6])):
@@ -96,18 +98,25 @@ def plot(df,opts={}):
 #    plt.show()
 
 plot(df,
-     {'type':['GEO','RANK'],
-      'bubble_size': 'NEXT_REV',
-      'min_rev_growth':10000})
+     {'type':['GEO'],
+      'time_frame': 'NEXT_12',
+      'min_rev_growth':10000,
+      'show_sp_name':1000000})
 
-plot(df[(df['Partner Group Name']=='NTT') &
-        (df['Service Provider']!='NTT DATA Inc.')],
+#plot(df[(df['Partner Group Name']=='NTT') &
+#        (df['Service Provider']!='NTT DATA Inc.')],
+#    {'type':['NO_SLICE'],
+#     'time_frame': 'LAST_REV',     
+#     'min_rev_growth':10000})
+#    
+plot(df[(df['GEO']=='APAC')],
     {'type':['NO_SLICE'],
-     'bubble_size': 'NEXT_REV',     
-     'min_rev_growth':10000})
+     'time_frame': 'NEXT_12',     
+     'min_rev_growth':10000,
+     'show_sp_name':500000})
     
-plot(df[(df['Country']=='Japan')],
-    {'type':['NO_SLICE'],
-     'bubble_size': 'NEXT_REV',     
-     'min_rev_growth':10000})
+#plot(df[(df['Country']=='Japan')],
+#    {'type':['NO_SLICE'],
+#     'time_frame': 'LAST_REV',     
+#     'min_rev_growth':10000})
     
