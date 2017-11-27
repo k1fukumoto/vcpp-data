@@ -3,7 +3,7 @@
 
 import numpy as np
 from matplotlib import pyplot as plt
-import config as cfg
+from defines import *
 
 def format_chart(data,opts={}):
     ax = plt.gca()
@@ -26,10 +26,13 @@ def format_chart(data,opts={}):
     
     plt.gcf().set_size_inches(10,6)
     plt.title('Revenue Size vs Growth Distribution')
+    
+    annotate_sp_name(ax,data,opts)
+
 
 def build_size_growth_table(df,opts):
-    df_last = df[(df['Usage Period'] >= cfg.LAST_QUARTER[0]) & (df['Usage Period'] <= cfg.LAST_QUARTER[2])]
-    df_prev = df[(df['Usage Period'] >= cfg.PREV_QUARTER[0]) & (df['Usage Period'] <= cfg.PREV_QUARTER[2])]
+    df_last = df[(df['Usage Period'] >= LAST_QUARTER[0]) & (df['Usage Period'] <= LAST_QUARTER[2])]
+    df_prev = df[(df['Usage Period'] >= PREV_QUARTER[0]) & (df['Usage Period'] <= PREV_QUARTER[2])]
     s_last = df_last.groupby('Service Provider')['Value (USD)'].sum().sort_values(ascending=False)
     s_prev = df_prev.groupby('Service Provider')['Value (USD)'].sum().sort_values(ascending=False)
 
@@ -42,7 +45,7 @@ def build_size_growth_table(df,opts):
             if prev > 0 and (last-prev)>opts['min_rev_growth'] and last/prev < 50: # One company grew +12000%
                 df_sp = df_last[df_last['Service Provider']==sp]
                 country = df_sp.groupby('Country')['Value (USD)'].sum().sort_values(ascending=False).index[0]
-                geo = cfg.COUNTRY2GEO[country]
+                geo = COUNTRY2GEO[country]
                 growth = last/prev-1
                 if(opts['time_frame'] == 'LAST_12'):
                     data = np.vstack([data,[sp,prev,last,growth,last-prev,geo,country]])
@@ -66,7 +69,6 @@ def plot(df,opts={}):
         plt.scatter(data[1:,4],data[1:,3],s=data[1:,2].astype(np.float)/2000,alpha=0.6)
 
         opts['no_legend'] = True
-        annotate_sp_name(ax,data,opts)
         format_chart(data,opts)
         plt.show()
 
@@ -96,27 +98,4 @@ def plot(df,opts={}):
 #        plt.scatter(c_data[:,4],c_data[:,3],s=c_data[:,2].astype(np.float)/1000,alpha=0.6,label=c)
 #    format_chart()
 #    plt.show()
-
-plot(df,
-     {'type':['GEO'],
-      'time_frame': 'NEXT_12',
-      'min_rev_growth':10000,
-      'show_sp_name':1000000})
-
-#plot(df[(df['Partner Group Name']=='NTT') &
-#        (df['Service Provider']!='NTT DATA Inc.')],
-#    {'type':['NO_SLICE'],
-#     'time_frame': 'LAST_REV',     
-#     'min_rev_growth':10000})
-#    
-plot(df[(df['GEO']=='APAC')],
-    {'type':['NO_SLICE'],
-     'time_frame': 'NEXT_12',     
-     'min_rev_growth':10000,
-     'show_sp_name':500000})
-    
-#plot(df[(df['Country']=='Japan')],
-#    {'type':['NO_SLICE'],
-#     'time_frame': 'LAST_REV',     
-#     'min_rev_growth':10000})
     

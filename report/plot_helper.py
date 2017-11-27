@@ -7,7 +7,7 @@ def format_trend_chart():
     ax = plt.gca()
     # grids
     ax.yaxis.grid(which="major", color='black', linestyle='dashed', linewidth=.3)
-    ax.xaxis.grid(which="major", color='black', linestyle='dashed', linewidth=.3)
+    ax.xaxis.grid(which="minor", color='black', linestyle='dashed', linewidth=.3)
 
     # y axis ticks
     ax.set_yticklabels(['${:,.0f}K'.format(x/1000) for x in ax.get_yticks()])

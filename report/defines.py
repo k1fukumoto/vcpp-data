@@ -5,17 +5,21 @@ import datetime
 
 RELOAD_CSV = False
 
+CSV_FILE = '../data/GlobalUsageReport.csv'
+
 LAST_QUARTER = [
-                datetime.date(2017,2,1),
-                datetime.date(2017,3,1),
-                datetime.date(2017,4,1)
+                datetime.date(2017,7,1),
+                datetime.date(2017,8,1),
+                datetime.date(2017,9,1)
                 ]
 
 PREV_QUARTER = [
-                datetime.date(2016,1,1),
-                datetime.date(2016,2,1),
-                datetime.date(2016,3,1)
+                datetime.date(2016,7,1),
+                datetime.date(2016,8,1),
+                datetime.date(2016,9,1)
                 ]
+
+QUARTER_RANGE = (PREV_QUARTER,LAST_QUARTER)
 
 COUNTRY2GEO = {
         'Algeria': 'EMEA',
