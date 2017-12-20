@@ -7,19 +7,24 @@ RELOAD_CSV = False
 
 CSV_FILE = '../data/GlobalUsageReport.csv'
 
-LAST_QUARTER = [
-                datetime.date(2017,7,1),
-                datetime.date(2017,8,1),
-                datetime.date(2017,9,1)
+END_QUARTER = [
+               datetime.date(2017,8,1),
+               datetime.date(2017,9,1),
+               datetime.date(2017,10,1)
+               ]
+YEAR_AGO_QUARTER = map(lambda x: x.replace(year=x.year-1),END_QUARTER)
+
+START_QUARTER = [
+                datetime.date(2016,1,1),
+                datetime.date(2016,2,1),
+                datetime.date(2016,3,1)
                 ]
 
-PREV_QUARTER = [
-                datetime.date(2016,7,1),
-                datetime.date(2016,8,1),
-                datetime.date(2016,9,1)
-                ]
+QUARTER_RANGE = (START_QUARTER,END_QUARTER)
 
-QUARTER_RANGE = (PREV_QUARTER,LAST_QUARTER)
+START_MONTH = QUARTER_RANGE[0][0]
+END_MONTH = QUARTER_RANGE[1][2]
+
 
 COUNTRY2GEO = {
         'Algeria': 'EMEA',
