@@ -20,7 +20,6 @@ def format_chart(data,opts={}):
     ax.yaxis.grid(which="major", color='black', linestyle='dashed', linewidth=.3)
     ax.yaxis.grid(which="minor", color='black', linestyle='dashed', linewidth=.3)
 
-
 # Axis Label
     ax.set_xticklabels(['${:,.0f}K'.format(x/1000) for x in ax.get_xticks()])
     ax.set_xlabel('YoY QRR Increase')
@@ -30,10 +29,9 @@ def format_chart(data,opts={}):
    # Legend
     if not 'no_legend' in opts.keys():
         ax.legend(loc="upper right")       
-
    
-    plt.gcf().set_size_inches(10,20)
-    plt.plot([0, 1500000], [0.27, 0.27], color='tomato', linestyle='-', linewidth=2)
+#    plt.gcf().set_size_inches(10,20)
+#    plt.plot([0, 1500000], [0.27, 0.27], color='tomato', linestyle='-', linewidth=2)
 
     plt.title('Revenue Size vs Growth Distribution')
     
@@ -68,15 +66,15 @@ def annotate_sp_name(ax,data,opts):
         for row in data[1:,:][data[1:,4].astype(float) > float(opts['show_sp_name'])]:
             print('{:40} {:16} ({}) ${:10,.0f} ({:,.0f}%)'.format(row[0],row[6],row[5],float(row[4]),float(row[3])*100))
             ax.annotate(row[0],
-                        xy=(row[4],row[3]), 
-                        xytext=(row[4],row[3]))      
+                        xy=(float(row[4]),float(row[3])), 
+                        xytext=(float(row[4]),float(row[3])))      
         
 def plot(df,opts={},time_frame='LAST_12',group_key='Service Provider'):
     data = build_size_growth_table(df,opts,time_frame,group_key)
     ax = plt.gca()
     
     if 'NO_SLICE' in opts['type']:
-        plt.scatter(data[1:,4],data[1:,3],s=data[1:,2].astype(np.float)/2000,alpha=0.6)
+        plt.scatter(data[1:,4].astype(np.float),data[1:,3].astype(np.float),s=data[1:,2].astype(np.float)/1000,alpha=0.6)
 
         opts['no_legend'] = True
         format_chart(data,opts)
