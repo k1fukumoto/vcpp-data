@@ -30,7 +30,7 @@ def format_chart(data,opts={}):
     if not 'no_legend' in opts.keys():
         ax.legend(loc="upper right")       
    
-#    plt.gcf().set_size_inches(10,20)
+    plt.gcf().set_size_inches(10,20)
 #    plt.plot([0, 1500000], [0.27, 0.27], color='tomato', linestyle='-', linewidth=2)
 
     plt.title('Revenue Size vs Growth Distribution')
@@ -74,7 +74,7 @@ def plot(df,opts={},time_frame='LAST_12',group_key='Service Provider'):
     ax = plt.gca()
     
     if 'NO_SLICE' in opts['type']:
-        plt.scatter(data[1:,4].astype(np.float),data[1:,3].astype(np.float),s=data[1:,2].astype(np.float)/1000,alpha=0.6)
+        plt.scatter(data[1:,4].astype(np.float),data[1:,3].astype(np.float),s=data[1:,2].astype(np.float)/500,alpha=0.6)
 
         opts['no_legend'] = True
         format_chart(data,opts)
