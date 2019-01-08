@@ -8,9 +8,9 @@ RELOAD_CSV = False
 CSV_FILE = '../data/GlobalUsageReport.csv'
 
 END_QUARTER = [
-               datetime.date(2017,10,1),
-               datetime.date(2017,11,1),
-               datetime.date(2017,12,1)
+               datetime.date(2018,7,1),
+               datetime.date(2018,8,1),
+               datetime.date(2018,9,1)
                ]
 YEAR_AGO_QUARTER = list(map(lambda x: x.replace(year=x.year-1),END_QUARTER))
 
